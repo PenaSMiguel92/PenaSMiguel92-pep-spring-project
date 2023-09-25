@@ -2,18 +2,14 @@ package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.entity.Account;
-import com.example.exception.ClientErrorException;
-import com.example.exception.ConflictException;
-import com.example.exception.UnauthorizedException;
-import com.example.service.AccountService;
-import com.example.service.MessageService;
+import com.example.entity.*;
+import com.example.exception.*;
+import com.example.service.*;
+
+import java.util.List;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -26,13 +22,14 @@ import com.example.service.MessageService;
 public class SocialMediaController {
     private AccountService accountService;
     private MessageService messageService;
-
+    //Dependency Injections
     @Autowired
     public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = accountService;
         this.messageService = messageService;
     }
 
+    //Account Mappings
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
@@ -46,6 +43,54 @@ public class SocialMediaController {
         return this.accountService.loginAttempt(account);
     }
 
+    //Message Mappings
+
+    @PostMapping("/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public Message createMessage(@RequestBody Message message) throws ClientErrorException {
+        return this.messageService.createMessage(message);
+    }
+
+    @GetMapping("/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Message> getAllMessages() {
+        return messageService.getAllMessages();
+    }
+
+    @GetMapping("/messages/{message_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Message getMessageById(@PathVariable("message_id") int id) {
+        return messageService.getMessageById(id);
+    }
+    //TODO: Find out how to determine number of rows affected with JPARepository.
+    //TODO: Find out how to send a custom responsebody, where it can be empty.
+    @DeleteMapping("/messages/{message_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Integer> deleteMessageById(@PathVariable("message_id") int id) {
+        int affectedRows = this.messageService.deleteMessageById(id);
+        if (affectedRows>0)
+            return new ResponseEntity<>(affectedRows, HttpStatus.OK);
+
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @PatchMapping("/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Integer> updateMessage(@RequestBody Message message) {
+        int affectedRows = this.messageService.updateMessage(message);
+        if (affectedRows > 0)
+            return new ResponseEntity<>(affectedRows, HttpStatus.OK);
+        
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/accounts/{account_id}/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Message> getAllMessagesByAccountId(@PathVariable("account_id") int id) {
+        return this.messageService.getAllMessagesByAccountId(id);
+    }
+
+    //Exception Handlers
 
     @ExceptionHandler(ClientErrorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
