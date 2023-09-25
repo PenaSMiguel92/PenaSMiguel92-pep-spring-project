@@ -2,7 +2,6 @@ package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.entity.*;
@@ -62,43 +61,25 @@ public class SocialMediaController {
     public Message getMessageById(@PathVariable("message_id") int id) {
         return messageService.getMessageById(id);
     }
-    //TODO: Find out how to determine number of rows affected with JPARepository.
-    //TODO: Find out how to send a custom responsebody, where it can be empty.
+
     @DeleteMapping("/messages/{message_id}")
-    public ResponseEntity<Integer> deleteMessageById(@PathVariable("message_id") int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Integer deleteMessageById(@PathVariable("message_id") int id) {
         int affectedRows = this.messageService.deleteMessageById(id);
-        if (affectedRows>0)
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("delete-status", "true")
-                .body(affectedRows);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("delete-status", "false")
-                .build();
+        return affectedRows;
     }
 
-    @PatchMapping("/messages")
-    public ResponseEntity<Integer> updateMessage(@RequestBody Message message) {
-        int affectedRows = this.messageService.updateMessage(message);
-        if (affectedRows > 0)
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .header("update-status", "true")
-                    .body(affectedRows);
-        
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header("update-status", "false")
-                .build();
+    @PatchMapping("/messages/{message_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer updateMessage(@RequestBody Message message, @PathVariable("message_id") int id) throws ClientErrorException {
+        return this.messageService.updateMessage(message, id);
     }
 
-    // @GetMapping("/accounts/{account_id}/messages")
-    // @ResponseStatus(HttpStatus.OK)
-    // public List<Message> getAllMessagesByAccountId(@PathVariable("account_id") int id) {
-    //     return this.messageService.getAllMessagesByAccountId(id);
-    // }
+    @GetMapping("/accounts/{account_id}/messages")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Message> getAllMessagesByAccountId(@PathVariable("account_id") int id) {
+        return this.messageService.getAllMessagesByAccountId(id);
+    }
 
     //Exception Handlers
 

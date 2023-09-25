@@ -6,11 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.entity.Account;
-import com.example.entity.Message;
+import com.example.entity.*;
 import com.example.exception.ClientErrorException;
-import com.example.repository.AccountRepository;
-import com.example.repository.MessageRepository;
+import com.example.repository.*;
 
 @Service
 public class MessageService {
@@ -52,28 +50,25 @@ public class MessageService {
     }
 
     public int deleteMessageById(int id) {
+        return this.messageRepository.deleteMessageByMessageId(id); 
+    }
+
+    public int updateMessage(Message message, int id) throws ClientErrorException {
+        if (message.getMessage_text().isBlank())
+            throw new ClientErrorException("Please enter some text.");
+        if (message.getMessage_text().length() >= 255)
+            throw new ClientErrorException("Please enter a shorter message.");
+
         Optional<Message> messageOptional = this.messageRepository.findById(id);
-        if (messageOptional.isPresent()) {
-            this.messageRepository.deleteById(id);
-            return 1;
-        } 
-
-        return 0;
+        if (!messageOptional.isPresent())
+            throw new ClientErrorException("Message does not exist.");
+        
+        return this.messageRepository.updateMessageByMessageId(message.getMessage_text(), id);
     }
 
-    public int updateMessage(Message message) {
-        Optional<Message> messageOptional = this.messageRepository.findById(message.getMessage_id());
-        if (messageOptional.isPresent()) {
-            Message existingmessage = messageOptional.get();
-            existingmessage.setMessage_text(message.getMessage_text());
-            this.messageRepository.save(existingmessage);
-            return 1;
-        }
-
-        return 0;
+    public List<Message> getAllMessagesByAccountId(int id) {
+        //User story did not explicitly say I had to check if the account exists.
+        //Therefore, I did not check and throw a client error exception if they don't exist.
+        return this.messageRepository.findAllByPostedBy(id);
     }
-
-    // public List<Message> getAllMessagesByAccountId(int id) {
-    //     return this.messageRepository.findAllByAccountId(id);
-    // }
 }

@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
-import com.example.exception.ClientErrorException;
-import com.example.exception.ConflictException;
-import com.example.exception.UnauthorizedException;
+import com.example.exception.*;
 import com.example.repository.AccountRepository;
 
 @Service
