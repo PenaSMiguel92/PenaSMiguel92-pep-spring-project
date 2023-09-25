@@ -65,30 +65,40 @@ public class SocialMediaController {
     //TODO: Find out how to determine number of rows affected with JPARepository.
     //TODO: Find out how to send a custom responsebody, where it can be empty.
     @DeleteMapping("/messages/{message_id}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Integer> deleteMessageById(@PathVariable("message_id") int id) {
         int affectedRows = this.messageService.deleteMessageById(id);
         if (affectedRows>0)
-            return new ResponseEntity<>(affectedRows, HttpStatus.OK);
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("delete-status", "true")
+                .body(affectedRows);
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("delete-status", "false")
+                .build();
     }
 
     @PatchMapping("/messages")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Integer> updateMessage(@RequestBody Message message) {
         int affectedRows = this.messageService.updateMessage(message);
         if (affectedRows > 0)
-            return new ResponseEntity<>(affectedRows, HttpStatus.OK);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header("update-status", "true")
+                    .body(affectedRows);
         
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("update-status", "false")
+                .build();
     }
 
-    @GetMapping("/accounts/{account_id}/messages")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Message> getAllMessagesByAccountId(@PathVariable("account_id") int id) {
-        return this.messageService.getAllMessagesByAccountId(id);
-    }
+    // @GetMapping("/accounts/{account_id}/messages")
+    // @ResponseStatus(HttpStatus.OK)
+    // public List<Message> getAllMessagesByAccountId(@PathVariable("account_id") int id) {
+    //     return this.messageService.getAllMessagesByAccountId(id);
+    // }
 
     //Exception Handlers
 

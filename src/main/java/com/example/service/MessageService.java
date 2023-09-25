@@ -73,7 +73,7 @@ public class MessageService {
         return 0;
     }
 
-    public List<Message> getAllMessagesByAccountId(int id) {
-        return this.messageRepository.findAllByAccountId(id);
-    }
+    // public List<Message> getAllMessagesByAccountId(int id) {
+    //     return this.messageRepository.findAllByAccountId(id);
+    // }
 }
