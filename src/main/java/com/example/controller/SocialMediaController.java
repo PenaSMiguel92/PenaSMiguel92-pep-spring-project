@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.exception.ClientErrorException;
+import com.example.exception.ConflictException;
+import com.example.exception.UnauthorizedException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -34,8 +36,14 @@ public class SocialMediaController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.OK)
-    public Account registerAcount(@RequestBody Account account) throws ClientErrorException {
+    public Account registerAcount(@RequestBody Account account) throws ClientErrorException, ConflictException {
         return this.accountService.registerAccount(account);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public Account loginAttempt(@RequestBody Account account) throws UnauthorizedException {
+        return this.accountService.loginAttempt(account);
     }
 
 
@@ -45,6 +53,17 @@ public class SocialMediaController {
         return ex.getMessage();
     }
 
-    
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String HandleClientErrorException(ConflictException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String HandleUnauthorizedException(UnauthorizedException ex) {
+        return ex.getMessage();
+    }
+
 
 }
