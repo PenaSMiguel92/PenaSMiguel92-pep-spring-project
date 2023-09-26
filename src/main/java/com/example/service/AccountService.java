@@ -24,7 +24,7 @@ public class AccountService {
             throw new ClientErrorException("Please enter a longer password.");
         Optional<Account> accountOptional = Optional
             .ofNullable(this.accountRepository
-            .findByUsername(account.getUsername()));
+            .findAccountByUsername(account.getUsername()));
         if (accountOptional.isPresent())
             throw new ConflictException("Please choose a different username."); 
         
@@ -36,7 +36,7 @@ public class AccountService {
             throw new UnauthorizedException("Please enter a valid username.");
         Optional<Account> accountOptional = Optional
             .ofNullable(this.accountRepository
-            .findByUsername(account.getUsername()));
+            .findAccountByUsername(account.getUsername()));
         if (!accountOptional.isPresent())
             throw new UnauthorizedException("Username does not exist.");
         Account existingAccount = accountOptional.get();    
