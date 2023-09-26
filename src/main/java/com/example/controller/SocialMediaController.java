@@ -65,8 +65,7 @@ public class SocialMediaController {
     @DeleteMapping("/messages/{message_id}")
     @ResponseStatus(HttpStatus.OK)
     public Integer deleteMessageById(@PathVariable("message_id") int id) {
-        int affectedRows = this.messageService.deleteMessageById(id);
-        return affectedRows;
+        return this.messageService.deleteMessageById(id);
     }
 
     @PatchMapping("/messages/{message_id}")
